@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tra cứu phụ tùng</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    <style>
+        body { font-family: sans-serif; padding: 20px; max-width: 500px; margin: auto; }
+        input[type="text"] { width: 100%; padding: 10px; font-size: 18px; }
+        button { padding: 10px 20px; font-size: 16px; margin-top: 10px; }
+        #qr-reader { margin-top: 20px; display: none; }
+    </style>
+</head>
+<body>
+    <h2>🔧 Nhập mã phụ tùng hoặc quét mã vạch</h2>
+
+    <form action="/search" method="POST" id="search-form">
+        <input type="text" name="ma_phutung" id="ma_phutung" placeholder="VD: 91202-KVB-901" required />
+        <button type="submit">🔍 Tìm kiếm</button>
+    </form>
+
+    <button type="button" onclick="startScanner()">📷 Quét mã vạch</button>
+    <div id="qr-reader"></div>
+
+    <script>
+        let scannerStarted = false;
+        let qrReader;
+
+        function startScanner() {
+            if (scannerStarted) return;
+            scannerStarted = true;
+
+            const qrRegion = document.getElementById("qr-reader");
+            qrRegion.style.display = "block";
+
+            qrReader = new Html5Qrcode("qr-reader");
+            Html5Qrcode.getCameras().then(cameras => {
+                if (cameras && cameras.length) {
+                    const camId = cameras[0].id;
+                    qrReader.start(
+                        camId,
+                        { fps: 10, qrbox: 250 },
+                        (decodedText, decodedResult) => {
+                            document.getElementById("ma_phutung").value = decodedText;
+                            qrReader.stop().then(() => {
+                                scannerStarted = false;
+                                setTimeout(() => {
+                                    document.getElementById("search-form").submit();
+                                }, 100);
+                            });
+                        },
+                        (errorMessage) => {}
+                    ).catch(err => {
+                        console.error("Lỗi khởi tạo camera:", err);
+                        scannerStarted = false;
+                    });
+                }
+            }).catch(err => {
+                console.error("Không tìm thấy camera:", err);
+                scannerStarted = false;
+            });
+        }
+    </script>
+</body>
+</html>
