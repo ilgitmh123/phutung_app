@@ -1,1 +1,7 @@
+<<<<<<< HEAD
 pandas
+=======
+Flask
+pandas
+openpyxl
+>>>>>>> 70ac1c1f9a978b6180154003fcf4bc35dd1ac072
