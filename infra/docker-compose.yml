@@ -1,0 +1,33 @@
+version: "3.9"
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: parts
+      POSTGRES_USER: parts
+      POSTGRES_PASSWORD: parts
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL","pg_isready -U parts -d parts"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+  redis:
+    image: redis:7
+  backend:
+    build:
+      context: ..
+      dockerfile: ./infra/docker/Dockerfile.backend
+    env_file: [./env/.env.example]
+    depends_on: [db, redis]
+    ports: ["8000:8000"]
+    volumes: ["../backend:/app"]
+  worker:
+    build:
+      context: ..
+      dockerfile: ./infra/docker/Dockerfile.worker
+    env_file: [./env/.env.example]
+    depends_on: [backend, redis]
+volumes:
+  dbdata: {}

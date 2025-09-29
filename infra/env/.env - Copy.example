@@ -1,0 +1,9 @@
+DJANGO_SECRET_KEY=dev-secret
+DEBUG=1
+ALLOWED_HOSTS=*
+DB_NAME=parts
+DB_USER=parts
+DB_PASSWORD=parts
+DB_HOST=db
+DB_PORT=5432
+REDIS_URL=redis://redis:6379/0

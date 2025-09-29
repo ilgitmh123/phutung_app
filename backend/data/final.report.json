@@ -1,0 +1,18 @@
+{
+  "ok": 3,
+  "fail": 0,
+  "items": [
+    {
+      "sku": "082322MBK6LVD",
+      "created": false
+    },
+    {
+      "sku": "082322MBK6LVS01",
+      "created": true
+    },
+    {
+      "sku": "08OTPIDE100PCS",
+      "created": true
+    }
+  ]
+}

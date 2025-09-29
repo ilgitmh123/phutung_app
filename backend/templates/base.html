@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>{% block title %}NGUYÊN SHOP 🛒✨{% endblock %}</title>
+  <meta name="theme-color" content="#0b0f17"/>
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root{
+      --bg:#0b0f17; --bg-soft:#111825; --card:#0e1624; --muted:#93a3b8; --txt:#e7eefb;
+      --acc:#5eead4; --acc2:#60a5fa;
+    }
+    body{background:
+      radial-gradient(1200px 600px at 80% -10%,rgba(96,165,250,.15),transparent),
+      radial-gradient(1000px 600px at -10% 110%,rgba(94,234,212,.12),transparent),
+      var(--bg); color:var(--txt)}
+    .glass{background:linear-gradient(0deg,rgba(11,15,23,.35),rgba(11,15,23,.85));backdrop-filter:blur(8px)}
+    .card{background:linear-gradient(180deg,rgba(14,22,36,.9),rgba(14,22,36,.65));border:1px solid rgba(255,255,255,.06)}
+    .btn{background:linear-gradient(135deg,var(--acc),var(--acc2)); color:#041014}
+  </style>
+</head>
+<body class="min-h-screen">
+  <!-- Header -->
+  <header class="sticky top-0 z-50 glass border-b border-white/10">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-3 font-extrabold tracking-wide">
+        <span class="w-10 h-10 rounded-xl grid place-items-center"
+              style="background:linear-gradient(135deg,var(--acc),var(--acc2)); color:#00111a">NS</span>
+        <span class="text-lg">NGUYÊN SHOP</span>
+      </a>
+      <nav class="flex items-center gap-3 text-sm">
+        <a class="hover:text-cyan-200" href="/shop/">Danh mục</a>
+        <a class="hover:text-cyan-200" href="/api/docs/">API</a>
+        <a class="hover:text-cyan-200" href="/admin/">Admin</a>
+        {% if request.user.is_authenticated %}
+          <a class="px-3 py-1 rounded-xl border border-white/10 hover:bg-white/5" href="/auth/logout/">Đăng xuất</a>
+        {% else %}
+          <a class="px-3 py-1 rounded-xl border border-white/10 hover:bg-white/5" href="/auth/login/">Đăng nhập</a>
+          <a class="px-3 py-1 rounded-xl border border-white/10 hover:bg-white/5" href="/auth/signup/">Đăng ký</a>
+        {% endif %}
+      </nav>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 py-8">{% block content %}{% endblock %}</main>
+
+  <footer class="border-t border-white/10 text-white/60 text-sm py-8">
+    <div class="max-w-6xl mx-auto px-4 flex items-center justify-between gap-3 flex-wrap">
+      <div>© {% now "Y" %} Nguyên Shop • Made with 💙</div>
+      <div>CSKH: 0900 000 000 • Zalo/Telegram • hello@nguyenshop.vn</div>
+    </div>
+  </footer>
+</body>
+</html>

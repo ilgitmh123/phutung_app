@@ -1,0 +1,77 @@
+import re
+
+ALIAS = {
+    "name_vi": {"Tên Tiếng Việt","Tên tiếng Việt","ten tieng viet"},
+    "name_en": {"Tên tiếng Anh","ten tieng anh"},
+    "note": {"Ghi chú","Ghi chu"},
+    "color_code": {"Mã màu","Ma mau"},
+    "model": {"Model","Dòng xe","Dong xe"},
+    "part_category": {"Part Category","Category","Danh mục"},
+    "price_retail": {"Giá bán lẻ","Gia ban le"},
+    "price_wholesale": {"Giá bán sỉ","Gia ban si","Giá bán sỉ "},
+    "price_head_vat": {"Giá bán\ncho HEAD \n(có VAT)"},
+    "vat_rate": {"Thuế xuất VAT áp dụng\n1/8/2025","VAT","Thue VAT"},
+    "updated_at": {"Ngày cập nhập","Ngay cap nhat","Ngày cập nhật"}
+}
+CATEGORY_MAP = {"BP":["Body Panels"],"GR":["Guides/Books"],"0":["Uncategorized"]}
+BRAND_PREFIX = {"K0G":"Honda","K0GA":"Honda","5GH":"Yamaha"}
+
+def _norm_key(k:str)->str:
+    return re.sub(r"\s+"," ", (k or "").strip())
+
+def _pick(raw:dict, aliases:set[str]):
+    for k in raw.keys():
+        if _norm_key(k) in aliases:
+            return raw[k]
+    return None
+
+def _parse_price(v):
+    if v in (None,"",0,"0"): return 0
+    s=str(v).strip().replace(",","").replace(".","")
+    return int(s) if s.isdigit() else 0
+
+def _parse_percent(v):
+    if v is None: return None
+    try: return int(round(float(str(v).replace('%',''))))
+    except: return None
+
+def _ensure_category(Category, code:str|None):
+    path = CATEGORY_MAP.get((code or "0").strip(), ["Uncategorized"])
+    parent=None
+    for name in path:
+        slug = re.sub(r"[^a-z0-9-]","-", name.lower())
+        cat,_ = Category.objects.get_or_create(parent=parent, slug=slug, defaults={"name":name})
+        parent=cat
+    return parent
+
+def _guess_brand(Brand, sku:str, default_brand:str):
+    for p,b in BRAND_PREFIX.items():
+        if sku.startswith(p):
+            return Brand.objects.get_or_create(name=b, defaults={"slug":b.lower()})[0]
+    return Brand.objects.get_or_create(name=default_brand, defaults={"slug":default_brand.lower()})[0]
+
+def normalize_item(sku:str, raw:dict, default_brand:str="Honda") -> dict:
+    from .models import Brand, Category  # local import
+    name_vi = _pick(raw, ALIAS["name_vi"]) or _pick(raw, ALIAS["name_en"]) or sku
+    name_en = _pick(raw, ALIAS["name_en"]) or ""
+    
+    part_cat = _pick(raw, ALIAS["part_category"]) or "0"
+    price_retail = _parse_price(_pick(raw, ALIAS["price_retail"]) or _pick(raw, ALIAS["price_head_vat"]))
+    price_wh = _parse_price(_pick(raw, ALIAS["price_wholesale"]))
+    vat = _parse_percent(_pick(raw, ALIAS["vat_rate"]))
+    color = _pick(raw, ALIAS.get("color_code", set())) or ""
+
+    brand = _guess_brand(Brand, sku, default_brand)
+    category = _ensure_category(Category, part_cat)
+    attrs = {"name_en":name_en, "color_code":color, "vat_rate":vat, "wholesale_price":price_wh, "raw":raw}
+    return {
+        "name": name_vi,
+        "oem_code": sku,
+        "brand": brand,
+        "category": category,
+        "retail_price": price_retail,
+        "sale_price": None,
+        "meta_title": name_en or name_vi,
+        "meta_description": f"{name_vi} – phụ tùng chính hãng.",
+        "attributes": attrs
+    }
