@@ -1,13 +1,15 @@
 {% extends 'base.html' %}
 {% block title %}Đăng ký{% endblock %}
 {% block content %}
-<h1 class="text-2xl font-bold mb-4">Đăng ký</h1>
-<form method="post" class="max-w-md space-y-3 bg-white p-6 rounded-xl shadow">
-  {% csrf_token %}
-  {% if error %}<div class="text-red-600 text-sm">{{ error }}</div>{% endif %}
-  <input class="w-full border rounded px-3 py-2" name="name" placeholder="Họ tên"/>
-  <input class="w-full border rounded px-3 py-2" name="email" placeholder="Email"/>
-  <input class="w-full border rounded px-3 py-2" type="password" name="password" placeholder="Mật khẩu"/>
-  <button class="bg-indigo-600 text-white px-4 py-2 rounded">Tạo tài khoản</button>
-</form>
+<section class="max-w-md mx-auto bg-white p-6 rounded-xl shadow text-slate-900 space-y-4">
+  <h1 class="text-2xl font-bold">Đăng ký</h1>
+  <form method="post" class="space-y-3">
+    {% csrf_token %}
+    {% if error %}<div class="text-red-600 text-sm">{{ error }}</div>{% endif %}
+    <input class="w-full border rounded px-3 py-2 text-slate-900" name="name" placeholder="Họ tên"/>
+    <input class="w-full border rounded px-3 py-2 text-slate-900" name="email" placeholder="Email"/>
+    <input class="w-full border rounded px-3 py-2 text-slate-900" type="password" name="password" placeholder="Mật khẩu"/>
+    <button class="bg-indigo-600 text-white px-4 py-2 rounded">Tạo tài khoản</button>
+  </form>
+</section>
 {% endblock %}
