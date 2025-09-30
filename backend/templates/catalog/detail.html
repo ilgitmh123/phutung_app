@@ -26,7 +26,8 @@
     <div class="mt-6 grid sm:grid-cols-2 gap-3">
       <div class="card rounded-xl p-4">
         <div class="text-sm text-white/60 mb-1">Thuộc tính</div>
-        <pre class="text-xs whitespace-pre-wrap text-white/70">{{ p.attributes|json_script:"attr" }}</pre>
+        <pre class="text-xs whitespace-pre-wrap text-white/70">{{ attributes_pretty }}</pre>
+        {{ p.attributes|json_script:"attr" }}
       </div>
       <div class="card rounded-xl p-4">
         <div class="text-sm text-white/60 mb-1">Mô tả</div>

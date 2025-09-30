@@ -1,6 +1,9 @@
+import json
+
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, render
+
 from .models import Product
 
 def home(request):
@@ -19,4 +22,8 @@ def product_list(request):
 
 def product_detail(request, slug):
     p = get_object_or_404(Product, slug=slug)
-    return render(request, 'catalog/detail.html', { 'p': p })
+    attributes_pretty = json.dumps(p.attributes, ensure_ascii=False, indent=2)
+    return render(request, 'catalog/detail.html', {
+        'p': p,
+        'attributes_pretty': attributes_pretty,
+    })
